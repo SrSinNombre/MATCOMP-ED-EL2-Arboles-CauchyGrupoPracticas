@@ -9,7 +9,7 @@ import java.util.Queue;
 
 public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
     private Key clave;
-    private Value valor;
+
     private Nodo<T> raiz;
     static class Nodo<T> {
         public Integer valor;
