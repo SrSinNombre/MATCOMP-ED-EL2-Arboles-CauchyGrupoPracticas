@@ -11,7 +11,7 @@ public class ArbolBinarioDeBusqueda {
         if (raiz.izquierdo != null){hijos++}
         if (raiz.derecho != null){hijos++}
         grado = hijos;
-        int AlturaIzq = gelAltura(raiz.izquierdo);
+        int AlturaIzq = getAltura(raiz.izquierdo);
         int AlturaDcha = getAltura(raiz.derecho);
         return Math.max(AlturaIzq, AlturaDcha);
     }
@@ -49,7 +49,9 @@ public class ArbolBinarioDeBusqueda {
 
         // Recursión para verificar homogeneidad
         private boolean verificarHomogeneidad(Nodo nodo, int[] gradoEsperado){
-            if (nodo == null) return true;
+            if (nodo == null) {
+                return true
+            }
 
             int gradoActual = obtenerGrado(nodo);
 
@@ -95,5 +97,59 @@ public class ArbolBinarioDeBusqueda {
             return true;
         }
 
+        public boolean isArbolCasiCompleto() {
+            if (raiz == null) {
+                return true;
+            }
 
+            Queue<Nodo> cola = new LinkedList<>();
+            Queue<Integer> niveles = new LinkedList<>();
+
+            cola.add(raiz);
+            niveles.add(0);
+
+            int nivelHojaMin = -1;
+            int nivelHojaMax = -1;
+            boolean encontradoHueco = false;
+            boolean seTerminoLaZonaCompleta = false;
+
+            while (!cola.isEmpty()) {
+                Nodo actual = cola.poll();
+                int nivel = niveles.poll();
+
+                boolean esHoja = (actual.izquierdo == null && actual.derecho == null);
+
+                if (esHoja) {
+                    if (nivelHojaMin == -1) nivelHojaMin = nivel;
+                    nivelHojaMax = nivel;
+
+                    // Si encontramos una hoja después de un hueco, no es contiguo
+                    if (seTerminoLaZonaCompleta) {
+                        return false;
+                    }
+                } else {
+                    // Caso en que falta hijo izquierdo: hueco detectado
+                    if (actual.izquierdo == null && actual.derecho != null) {
+                        return false;
+                    }
+
+                    if (actual.izquierdo != null) {
+                        cola.add(actual.izquierdo);
+                        niveles.add(nivel + 1);
+                    } else {
+                        seTerminoLaZonaCompleta = true;
+                    }
+
+                    if (actual.derecho != null) {
+                        cola.add(actual.derecho);
+                        niveles.add(nivel + 1);
+                    } else {
+                        seTerminoLaZonaCompleta = true;
+                    }
+                }
+            }
+
+            // Las hojas solo deben estar en como mucho 2 niveles, y esos deben ser consecutivos
+            return (nivelHojaMax - nivelHojaMin <= 1);
+        }
     }
