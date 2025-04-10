@@ -9,23 +9,22 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
     public ArbolBinarioDeBusqueda(){
         raiz = null;
     }
+    public Nodo<T> getRaiz(){
+        return raiz;
+    }
 
     public int getAltura(){
         return getAlturaRec(raiz);
     }
 
-    public int getAlturaRec(Nodo<T> nodo) {
+    private int getAlturaRec(Nodo<T> nodo) {
         if (raiz == null) {
             return -1;
         }
-        int hijos = 0;
-        if (nodo.izquierdo != null) {
-            hijos++;
+        else if(nodo == null){
+            return 0;
         }
-        else if (nodo.derecho != null) {
-            hijos++;
-        }
-        return Math.max(getAlturaRec(nodo.izquierdo), getAlturaRec(nodo.derecho));
+        return Math.max(getAlturaRec(nodo.izquierdo), getAlturaRec(nodo.derecho)) + 1;
     }
 
     public List<T> getListaDatosNivel(int nivel) {
@@ -56,6 +55,31 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
 
         }
         return resultado;
+    }
+
+    public List<T> getCamino(T dato){
+        List<T> camino = new ArrayList<>();
+        getCaminoRec(raiz, dato, camino);
+        return camino;
+    }
+    private boolean getCaminoRec(Nodo<T> nodo, T dato, List<T> lista){
+        if(nodo == null){
+            return false;
+        }
+
+        lista.add(nodo.getDato());
+
+        if(nodo.getDato() == dato){
+            return true;
+        }
+        if(getCaminoRec(nodo.izquierdo, dato, lista)){
+            return true;
+        }
+        if(getCaminoRec(nodo.derecho, dato, lista)){
+            return true;
+        }
+        lista.removeLast();
+        return false;
     }
 
     public boolean isArbolHomogeneo() {
