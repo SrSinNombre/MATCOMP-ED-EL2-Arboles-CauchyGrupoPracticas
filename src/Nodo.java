@@ -1,4 +1,4 @@
-public class Nodo<T extends Comparable<T>> {
+public class Nodo<T> {
     private T dato;
     public Nodo<T> izquierdo;
     public Nodo<T> derecho;
@@ -12,5 +12,18 @@ public class Nodo<T extends Comparable<T>> {
     }
     public void setDato(T dato){
         this.dato = dato;
+    }
+    public int obtenerGrado(){
+        int grado = 0;
+        if(izquierdo != null){
+            grado++;
+        }
+        if(derecho != null){
+            grado++;
+        }
+        return grado;
+    }
+    public boolean esHoja(){
+        return izquierdo == null && derecho == null;
     }
 }

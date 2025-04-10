@@ -9,26 +9,16 @@ import java.util.Queue;
 
 public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
     private Key clave;
-
     private Nodo<T> raiz;
 
-    static class Nodo<T> {
-        public Integer valor;
-        T dato;
-        Nodo<T> izquierdo, derecho;
-
-        Nodo(T dato) {
-            this.dato = dato;
-            izquierdo = derecho = null;
-        }
+    public ArbolBinarioDeBusqueda(){
+        raiz = null;
     }
 
-
-    public int getAltura(Nodo<T> izquierdo) {
+    public int getAltura(Nodo<T> nodo) {
         if (raiz == null) {
-            return 0;
+            return -1;
         }
-        int grado = 0;
         int hijos = 0;
         if (raiz.izquierdo != null) {
             hijos++;
@@ -36,30 +26,26 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
         if (raiz.derecho != null) {
             hijos++;
         }
-        grado = hijos;
-        int AlturaIzq = getAltura(raiz.izquierdo);
-        int AlturaDcha = getAltura(raiz.derecho);
-        return Math.max(AlturaIzq, AlturaDcha);
+        return Math.max(getAltura(raiz.izquierdo), getAltura(raiz.derecho));
     }
 
-    public List<Integer> getListaDatosNivel(int nivel) {
-        List<Integer> resultado = new ArrayList<>();
+    public List<T> getListaDatosNivel(int nivel) {
+        List<T> resultado = new ArrayList<>();
         if (raiz == null) return resultado;
 
-        Queue<Nodo> cola = new LinkedList<>();
+        Queue<Nodo<T>> cola = new LinkedList<>();
         Queue<Integer> niveles = new LinkedList<>();
 
         cola.add(raiz);
         niveles.add(0);
 
         while (!cola.isEmpty()) {
-            Nodo actual = cola.poll();
-            int nivelActual = niveles.poll();
+            Nodo<T> actual = cola.poll();
+            int nivelActual = niveles.remove();
 
             if (nivelActual == nivel) {
-                resultado.add(actual.valor);
+                resultado.add(actual.getDato());
             }
-
             if (actual.izquierdo != null) {
                 cola.add(actual.izquierdo);
                 niveles.add(nivelActual + 1);
@@ -68,7 +54,7 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
                 cola.add(actual.derecho);
                 niveles.add(nivelActual + 1);
             }
-            return resultado;
+
         }
         return resultado;
     }
@@ -78,12 +64,12 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
     }
 
     // Recursión para verificar homogeneidad
-    private boolean verificarHomogeneidad(Nodo nodo, int[] gradoEsperado) {
+    private boolean verificarHomogeneidad(Nodo<T> nodo, int[] gradoEsperado) {
         if (nodo == null) {
             return true;
         }
 
-        int gradoActual = obtenerGrado(nodo);
+        int gradoActual = nodo.obtenerGrado();
 
         if (gradoActual > 0) { // solo evaluamos nodos que no son hojas
             if (gradoEsperado[0] == -1) {
@@ -101,12 +87,12 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
     public boolean isArbolCompleto() {
         if (raiz == null) return true;
 
-        Queue<Nodo> cola = new LinkedList<>();
+        Queue<Nodo<T>> cola = new LinkedList<>();
         cola.add(raiz);
         boolean encontradoNodoIncompleto = false;
 
         while (!cola.isEmpty()) {
-            Nodo actual = cola.poll();
+            Nodo<T> actual = cola.poll();
 
             // Si tiene hijo izquierdo
             if (actual.izquierdo != null) {
@@ -118,7 +104,7 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
 
             // Si tiene hijo derecho
             if (actual.derecho != null) {
-                if (actual.izquierdo == null || encontradoNodoIncompleto) return false;
+                if (actual.izquierdo == null) return false;
                 cola.add(actual.derecho);
             } else {
                 encontradoNodoIncompleto = true;
@@ -133,7 +119,7 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
             return true;
         }
 
-        Queue<Nodo> cola = new LinkedList<>();
+        Queue<Nodo<T>> cola = new LinkedList<>();
         Queue<Integer> niveles = new LinkedList<>();
 
         cola.add(raiz);
@@ -145,12 +131,11 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
         boolean seTerminoLaZonaCompleta = false;
 
         while (!cola.isEmpty()) {
-            Nodo actual = cola.poll();
-            int nivel = niveles.poll();
+            Nodo<T> actual = cola.poll();
+            int nivel = niveles.remove();
 
-            boolean esHoja = (actual.izquierdo == null && actual.derecho == null);
 
-            if (esHoja) {
+            if (actual.esHoja()) {
                 if (nivelHojaMin == -1) nivelHojaMin = nivel;
                 nivelHojaMax = nivel;
 
@@ -183,22 +168,35 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
         return (nivelHojaMax - nivelHojaMin <= 1);
     }
 
-    public class sexo {
-        public void add(T dato) {
-            raiz = addRecursivo(raiz, dato);
-        }
+
+    public void add(T dato) {
+        addRecursivo(dato, raiz);
     }
 
-    private Nodo<T> addRecursivo(Nodo<T> nodo, T dato) {
-        if (nodo == null) {
-            return new Nodo<>(dato);
+    private void addRecursivo(T dato, Nodo<T> nodo) {
+        Nodo<T> nuevoNodo = new Nodo<>(dato);
+        if(raiz == null){
+            raiz = nuevoNodo;
         }
-        if (dato.compareTo(nodo.dato) < 0) {
-            nodo.izquierdo = addRecursivo(nodo.izquierdo, dato);
-        } else if (dato.compareTo(nodo.dato) > 0) {
-            nodo.derecho = addRecursivo(nodo.derecho, dato);
+        else {
+            if (nodo.getDato().compareTo(dato) < 0) {
+                if (nodo.derecho == null) {
+                    nodo.derecho = nuevoNodo;
+                } else {
+                    addRecursivo(dato, nodo.derecho);
+                }
+            }
+            if (nodo.getDato().compareTo(dato) > 0) {
+                if (nodo.izquierdo == null) {
+                    nodo.izquierdo = nuevoNodo;
+                } else {
+                    addRecursivo(dato, nodo.izquierdo);
+                }
+            }
+            if (nodo.getDato().equals(dato)) {
+                System.out.println("El elemento ya está en el árbol");
+            }
         }
-        return nodo;
     }
 
     public ArbolBinarioDeBusqueda<T> getSubArbolIzquierda() {
@@ -212,39 +210,39 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
         subArbol.raiz = raiz.derecho;
         return subArbol;
     }
-    public List<Integer> getListaPreOrden() {
-        List<Integer> resultado = new ArrayList<>();
+    public List<T> getListaPreOrden() {
+        List<T> resultado = new ArrayList<>();
         getListaPreOrdenRecursivo(raiz, resultado);
         return resultado;
     }
-    private void getListaPreOrdenRecursivo(Nodo<T> nodo, List<Integer> lista) {
+    private void getListaPreOrdenRecursivo(Nodo<T> nodo, List<T> lista) {
         if (nodo != null) {
-            lista.add(nodo.valor);
+            lista.add(nodo.getDato());
             getListaPreOrdenRecursivo(nodo.izquierdo, lista);
             getListaPreOrdenRecursivo(nodo.derecho, lista);
         }
     }
-    public List<Integer> getListaPostOrden() {
-        List<Integer> resultado = new ArrayList<>();
+    public List<T> getListaPostOrden() {
+        List<T> resultado = new ArrayList<>();
         getListaPostOrdenRecursivo(raiz, resultado);
         return resultado;
     }
-    private void getListaPostOrdenRecursivo(Nodo<T> nodo, List<Integer> lista) {
+    private void getListaPostOrdenRecursivo(Nodo<T> nodo, List<T> lista) {
         if (nodo != null) {
             getListaPostOrdenRecursivo(nodo.izquierdo, lista);
             getListaPostOrdenRecursivo(nodo.derecho, lista);
-            lista.add(nodo.valor);
+            lista.add(nodo.getDato());
         }
     }
-    public List<Integer> getListaOrdenCentral() {
-        List<Integer> resultado = new ArrayList<>();
+    public List<T> getListaOrdenCentral() {
+        List<T> resultado = new ArrayList<>();
         getListaOrdenCentralRecursivo(raiz, resultado);
         return resultado;
     }
-    private void getListaOrdenCentralRecursivo(Nodo<T> nodo, List<Integer> lista) {
+    private void getListaOrdenCentralRecursivo(Nodo<T> nodo, List<T> lista) {
         if (nodo != null) {
             getListaOrdenCentralRecursivo(nodo.izquierdo, lista);
-            lista.add(nodo.valor);
+            lista.add(nodo.getDato());
             getListaOrdenCentralRecursivo(nodo.derecho, lista);
         }
     }
