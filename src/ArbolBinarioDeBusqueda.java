@@ -11,10 +11,12 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
     private Key clave;
 
     private Nodo<T> raiz;
+
     static class Nodo<T> {
         public Integer valor;
         T dato;
         Nodo<T> izquierdo, derecho;
+
         Nodo(T dato) {
             this.dato = dato;
             izquierdo = derecho = null;
@@ -23,18 +25,23 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
 
 
     public int getAltura(Nodo<T> izquierdo) {
-            if (raiz == null) {
-                return 0;
-            }
-            int grado = 0;
-            int hijos = 0;
-            if (raiz.izquierdo != null){hijos++;}
-            if (raiz.derecho != null){hijos++;}
-            grado = hijos;
-            int AlturaIzq = getAltura(raiz.izquierdo);
-            int AlturaDcha = getAltura(raiz.derecho);
-            return Math.max(AlturaIzq, AlturaDcha);
+        if (raiz == null) {
+            return 0;
         }
+        int grado = 0;
+        int hijos = 0;
+        if (raiz.izquierdo != null) {
+            hijos++;
+        }
+        if (raiz.derecho != null) {
+            hijos++;
+        }
+        grado = hijos;
+        int AlturaIzq = getAltura(raiz.izquierdo);
+        int AlturaDcha = getAltura(raiz.derecho);
+        return Math.max(AlturaIzq, AlturaDcha);
+    }
+
     public List<Integer> getListaDatosNivel(int nivel) {
         List<Integer> resultado = new ArrayList<>();
         if (raiz == null) return resultado;
@@ -65,12 +72,13 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
         }
         return resultado;
     }
+
     public boolean isArbolHomogeneo() {
         return verificarHomogeneidad(raiz, new int[]{-1}); // usamos array para pasar "por referencia"
     }
 
     // Recursión para verificar homogeneidad
-    private boolean verificarHomogeneidad(Nodo nodo, int[] gradoEsperado){
+    private boolean verificarHomogeneidad(Nodo nodo, int[] gradoEsperado) {
         if (nodo == null) {
             return true;
         }
@@ -89,6 +97,7 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
         return verificarHomogeneidad(nodo.izquierdo, gradoEsperado) &&
                 verificarHomogeneidad(nodo.derecho, gradoEsperado);
     }
+
     public boolean isArbolCompleto() {
         if (raiz == null) return true;
 
@@ -118,6 +127,7 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
 
         return true;
     }
+
     public boolean isArbolCasiCompleto() {
         if (raiz == null) {
             return true;
@@ -172,6 +182,7 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
         // Las hojas solo deben estar en como mucho 2 niveles, y esos deben ser consecutivos
         return (nivelHojaMax - nivelHojaMin <= 1);
     }
+
     public class sexo {
         public void add(T dato) {
             raiz = addRecursivo(raiz, dato);
@@ -195,10 +206,47 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
         subArbol.raiz = raiz.izquierdo;
         return subArbol;
     }
+
     public ArbolBinarioDeBusqueda<T> getSubArbolDerecha() {
         ArbolBinarioDeBusqueda<T> subArbol = new ArbolBinarioDeBusqueda<>();
         subArbol.raiz = raiz.derecho;
         return subArbol;
+    }
+    public List<Integer> getListaPreOrden() {
+        List<Integer> resultado = new ArrayList<>();
+        getListaPreOrdenRecursivo(raiz, resultado);
+        return resultado;
+    }
+    private void getListaPreOrdenRecursivo(Nodo<T> nodo, List<Integer> lista) {
+        if (nodo != null) {
+            lista.add(nodo.valor);
+            getListaPreOrdenRecursivo(nodo.izquierdo, lista);
+            getListaPreOrdenRecursivo(nodo.derecho, lista);
+        }
+    }
+    public List<Integer> getListaPostOrden() {
+        List<Integer> resultado = new ArrayList<>();
+        getListaPostOrdenRecursivo(raiz, resultado);
+        return resultado;
+    }
+    private void getListaPostOrdenRecursivo(Nodo<T> nodo, List<Integer> lista) {
+        if (nodo != null) {
+            getListaPostOrdenRecursivo(nodo.izquierdo, lista);
+            getListaPostOrdenRecursivo(nodo.derecho, lista);
+            lista.add(nodo.valor);
+        }
+    }
+    public List<Integer> getListaOrdenCentral() {
+        List<Integer> resultado = new ArrayList<>();
+        getListaOrdenCentralRecursivo(raiz, resultado);
+        return resultado;
+    }
+    private void getListaOrdenCentralRecursivo(Nodo<T> nodo, List<Integer> lista) {
+        if (nodo != null) {
+            getListaOrdenCentralRecursivo(nodo.izquierdo, lista);
+            lista.add(nodo.valor);
+            getListaOrdenCentralRecursivo(nodo.derecho, lista);
+        }
     }
 }
 
