@@ -18,7 +18,7 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
         if (raiz.izquierdo != null) {
             hijos++;
         }
-        if (raiz.derecho != null) {
+        else if (raiz.derecho != null) {
             hijos++;
         }
         return Math.max(getAltura(raiz.izquierdo), getAltura(raiz.derecho));
