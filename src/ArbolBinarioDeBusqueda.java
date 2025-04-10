@@ -10,18 +10,22 @@ public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
         raiz = null;
     }
 
-    public int getAltura(Nodo<T> nodo) {
+    public int getAltura(){
+        return getAlturaRec(raiz);
+    }
+
+    public int getAlturaRec(Nodo<T> nodo) {
         if (raiz == null) {
             return -1;
         }
         int hijos = 0;
-        if (raiz.izquierdo != null) {
+        if (nodo.izquierdo != null) {
             hijos++;
         }
-        else if (raiz.derecho != null) {
+        else if (nodo.derecho != null) {
             hijos++;
         }
-        return Math.max(getAltura(raiz.izquierdo), getAltura(raiz.derecho));
+        return Math.max(getAlturaRec(nodo.izquierdo), getAlturaRec(nodo.derecho));
     }
 
     public List<T> getListaDatosNivel(int nivel) {
