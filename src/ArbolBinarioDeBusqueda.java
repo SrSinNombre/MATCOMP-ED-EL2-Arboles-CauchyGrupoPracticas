@@ -1,14 +1,9 @@
-import com.sun.jdi.Value;
-
-import java.awt.*;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 public class ArbolBinarioDeBusqueda<T extends Comparable<T>> {
-    private Key clave;
     private Nodo<T> raiz;
 
     public ArbolBinarioDeBusqueda(){
