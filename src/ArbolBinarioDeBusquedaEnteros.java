@@ -3,7 +3,7 @@ public class ArbolBinarioDeBusquedaEnteros<Integer extends Comparable<Integer>> 
     public int getSuma(){
         return getSumaRec(getRaiz());
     }
-    public int getSumaRec(Nodo<Integer> nodo){
+    private int getSumaRec(Nodo<Integer> nodo){
         if(nodo == null){
             return 0;
         }
